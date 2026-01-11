@@ -122,7 +122,7 @@ pytest tests/ -v --cov=src
 
 ### Part 1: Airflow DAG
 
-**File:** `dags/thrive_cash_processing_dag.py`
+**File:** [`dags/thrive_cash_processing_dag.py`](dags/thrive_cash_processing_dag.py)
 
 The DAG orchestrates the complete pipeline:
 
@@ -142,7 +142,7 @@ start → download_data → validate_source → perform_fifo_matching →
 
 ### Part 2: FIFO Matching Logic
 
-**File:** `src/fifo_matching.py`
+**File:** [`src/fifo_matching.py`](src/fifo_matching.py)
 
 The core algorithm that matches spent/expired transactions to earned transactions.
 
@@ -165,8 +165,8 @@ Result: Transaction 1001 gets REDEEMID = 1003 (oldest matched first)
 ### Part 3: Data Quality & Testing
 
 **Files:** 
-- `src/data_quality.py` - Validation framework
-- `tests/test_fifo_matching.py` - Unit tests
+- [`src/data_quality.py`](src/data_quality.py) - Validation framework
+- [`tests/test_fifo_matching.py`](tests/test_fifo_matching.py) - Unit tests
 
 **Source Validation Checks:**
 - No null values in required fields
@@ -189,7 +189,7 @@ Result: Transaction 1001 gets REDEEMID = 1003 (oldest matched first)
 
 ### Part 4: dbt Models
 
-**Directory:** `dbt/`
+**Directory:** [`dbt/`](dbt/)
 
 Transformation framework using dbt (data build tool).
 
@@ -212,7 +212,7 @@ Transformation framework using dbt (data build tool).
 
 ### Part 5: Analytics & Reporting
 
-**File:** `sql/analytics_queries.sql`
+**File:** [`sql/analytics_queries.sql`](sql/analytics_queries.sql)
 
 SQL queries for the finance team:
 
