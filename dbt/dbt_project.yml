@@ -1,0 +1,85 @@
+# =============================================================================
+# DBT PROJECT CONFIGURATION
+# =============================================================================
+#
+# PURPOSE:
+#     Configuration file for the dbt (data build tool) project.
+#     dbt is used to transform raw data into analytics-ready tables.
+#
+# WHAT IS DBT?
+#     dbt is a transformation tool that lets you write SQL SELECT statements
+#     and turns them into tables/views in your data warehouse. It handles:
+#     - Dependencies between models
+#     - Testing and documentation
+#     - Version control for transformations
+#
+# PROJECT STRUCTURE:
+#     models/
+#       staging/     - Clean raw data, 1:1 with source tables
+#       intermediate/ - Business logic transformations
+#       marts/       - Final tables for reporting
+#
+# AUTHOR: Data Applications Team
+# DATE: 2024
+# =============================================================================
+
+name: 'thrive_cash'
+version: '1.0.0'
+config-version: 2
+
+# -----------------------------------------------------------------------------
+# PROFILE CONFIGURATION
+# -----------------------------------------------------------------------------
+# The profile defines which database to connect to.
+# Profiles are stored in ~/.dbt/profiles.yml
+profile: 'thrive_cash'
+
+# -----------------------------------------------------------------------------
+# DIRECTORY PATHS
+# -----------------------------------------------------------------------------
+# Where dbt looks for different types of files
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+# Where dbt puts compiled SQL and run artifacts
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# -----------------------------------------------------------------------------
+# MODEL CONFIGURATIONS
+# -----------------------------------------------------------------------------
+# Default settings for models, organized by folder
+models:
+  thrive_cash:
+    # Staging models: Views for quick iteration during development
+    staging:
+      +materialized: view
+      +schema: staging
+      +tags: ['staging', 'thrive_cash']
+    
+    # Intermediate models: Views for complex transformations
+    intermediate:
+      +materialized: view
+      +schema: intermediate
+      +tags: ['intermediate', 'thrive_cash']
+    
+    # Mart models: Tables for production reporting (faster queries)
+    marts:
+      +materialized: table
+      +schema: marts
+      +tags: ['marts', 'thrive_cash', 'finance']
+
+# -----------------------------------------------------------------------------
+# VARIABLES
+# -----------------------------------------------------------------------------
+# Variables that can be referenced in models using {{ var('name') }}
+vars:
+  # Date range for processing (can be overridden at runtime)
+  start_date: '2022-01-01'
+  end_date: '2024-12-31'

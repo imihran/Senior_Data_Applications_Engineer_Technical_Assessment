@@ -1,0 +1,204 @@
+# =============================================================================
+# DBT SCHEMA CONFIGURATION
+# =============================================================================
+#
+# PURPOSE:
+#     Define tests, documentation, and metadata for dbt models.
+#     This file tells dbt:
+#     - What tests to run on each model
+#     - How to document columns
+#     - What the expected data quality is
+#
+# TEST TYPES:
+#     - unique: Column values must be unique
+#     - not_null: Column cannot have null values
+#     - accepted_values: Column must contain only specified values
+#     - relationships: Foreign key must exist in referenced table
+#
+# WHY TESTING MATTERS:
+#     - Catches data quality issues before they reach reports
+#     - Documents expected data behavior
+#     - Provides confidence in data transformations
+#
+# =============================================================================
+
+version: 2
+
+# =============================================================================
+# STAGING MODELS
+# =============================================================================
+
+models:
+  # ---------------------------------------------------------------------------
+  # stg_tc_data: Staged Thrive Cash transactions
+  # ---------------------------------------------------------------------------
+  - name: stg_tc_data
+    description: >
+      Cleaned and standardized Thrive Cash transaction data.
+      One row per transaction. This is the foundation for all TC analytics.
+    
+    columns:
+      - name: transaction_id
+        description: Unique identifier for each transaction
+        tests:
+          - unique
+          - not_null
+      
+      - name: transaction_type
+        description: Type of transaction (earned, spent, expired)
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['earned', 'spent', 'expired']
+      
+      - name: customer_id
+        description: Customer who owns this transaction
+        tests:
+          - not_null
+      
+      - name: amount
+        description: >
+          Transaction amount. Positive for earned, negative for spent/expired.
+        tests:
+          - not_null
+      
+      - name: created_at
+        description: When the transaction occurred
+        tests:
+          - not_null
+
+  # ---------------------------------------------------------------------------
+  # stg_customers: Staged customer data
+  # ---------------------------------------------------------------------------
+  - name: stg_customers
+    description: >
+      Cleaned customer dimension data. One row per customer.
+    
+    columns:
+      - name: customer_id
+        description: Unique customer identifier
+        tests:
+          - unique
+          - not_null
+
+# =============================================================================
+# INTERMEDIATE MODELS
+# =============================================================================
+
+  # ---------------------------------------------------------------------------
+  # int_fifo_matching: FIFO matching results
+  # ---------------------------------------------------------------------------
+  - name: int_fifo_matching
+    description: >
+      Transaction data with FIFO matching applied. Earned transactions
+      are linked to their corresponding spent/expired transactions.
+    
+    columns:
+      - name: transaction_id
+        description: Unique transaction identifier
+        tests:
+          - unique
+          - not_null
+      
+      - name: redeem_id
+        description: >
+          For earned transactions, the ID of the spent/expired transaction
+          that redeemed this credit. Null for unmatched earned transactions
+          and for spent/expired transactions.
+
+# =============================================================================
+# MART MODELS
+# =============================================================================
+
+  # ---------------------------------------------------------------------------
+  # fct_customer_balance_history: Balance over time
+  # ---------------------------------------------------------------------------
+  - name: fct_customer_balance_history
+    description: >
+      Fact table showing Thrive Cash balance history for each customer.
+      One row per customer per transaction, showing the balance after
+      that transaction. Used for historical balance queries.
+    
+    columns:
+      - name: customer_id
+        description: Customer identifier
+        tests:
+          - not_null
+      
+      - name: transaction_id
+        description: Transaction that caused this balance change
+        tests:
+          - not_null
+      
+      - name: cumulative_earned
+        description: Total amount earned up to this transaction
+        tests:
+          - not_null
+      
+      - name: cumulative_spent
+        description: Total amount spent up to this transaction
+        tests:
+          - not_null
+      
+      - name: cumulative_expired
+        description: Total amount expired up to this transaction
+        tests:
+          - not_null
+      
+      - name: current_balance
+        description: >
+          Available balance after this transaction.
+          Should equal cumulative_earned - cumulative_spent - cumulative_expired.
+        tests:
+          - not_null
+
+  # ---------------------------------------------------------------------------
+  # fct_customer_current_balance: Current balance snapshot
+  # ---------------------------------------------------------------------------
+  - name: fct_customer_current_balance
+    description: >
+      Snapshot of current Thrive Cash balance for each customer.
+      One row per customer. This is the primary table for balance lookups.
+    
+    columns:
+      - name: customer_id
+        description: Unique customer identifier
+        tests:
+          - unique
+          - not_null
+      
+      - name: current_balance
+        description: Customer's available Thrive Cash balance
+        tests:
+          - not_null
+      
+      - name: total_earned
+        description: Lifetime earned amount
+        tests:
+          - not_null
+      
+      - name: total_spent
+        description: Lifetime spent amount
+        tests:
+          - not_null
+      
+      - name: total_expired
+        description: Lifetime expired amount
+        tests:
+          - not_null
+
+
+# =============================================================================
+# CUSTOM DATA TESTS
+# =============================================================================
+# These tests check business rules that span multiple columns or tables.
+
+tests:
+  # ---------------------------------------------------------------------------
+  # Test: Balance should never be negative
+  # ---------------------------------------------------------------------------
+  # Customers can't spend more than they've earned
+  - name: balance_never_negative
+    description: >
+      Verify that no customer ever has a negative balance.
+      A negative balance would indicate a data quality issue.

@@ -1,0 +1,46 @@
+# =============================================================================
+# THRIVE CASH PROCESSING - PYTHON DEPENDENCIES
+# =============================================================================
+# This file lists all Python packages required to run the Thrive Cash 
+# data processing pipeline.
+#
+# INSTALLATION:
+#   pip install -r requirements.txt
+#
+# CATEGORIES:
+#   - Data Processing: pandas, openpyxl for Excel/CSV handling
+#   - Database: duckdb for local SQL processing (simulates Snowflake)
+#   - Orchestration: apache-airflow for workflow management
+#   - Testing: pytest for unit and integration tests
+#   - Data Quality: great_expectations for validation framework
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# DATA PROCESSING
+# -----------------------------------------------------------------------------
+pandas>=2.0.0          # DataFrame operations, data manipulation
+openpyxl>=3.1.0        # Read/write Excel files (.xlsx)
+numpy>=1.24.0          # Numerical operations
+
+# -----------------------------------------------------------------------------
+# DATABASE / SQL ENGINE
+# -----------------------------------------------------------------------------
+duckdb>=0.9.0          # In-process SQL database (Snowflake-like syntax)
+                       # Used for local development and testing
+
+# -----------------------------------------------------------------------------
+# WORKFLOW ORCHESTRATION
+# -----------------------------------------------------------------------------
+apache-airflow>=2.7.0  # DAG orchestration, scheduling, monitoring
+
+# -----------------------------------------------------------------------------
+# TESTING & DATA QUALITY
+# -----------------------------------------------------------------------------
+pytest>=7.4.0          # Unit testing framework
+pytest-cov>=4.1.0      # Test coverage reporting
+
+# -----------------------------------------------------------------------------
+# UTILITIES
+# -----------------------------------------------------------------------------
+python-dateutil>=2.8.0 # Date parsing and manipulation
+loguru>=0.7.0          # Better logging with colors and formatting
