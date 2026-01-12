@@ -1,8 +1,11 @@
 
 
-# Before we start the project please note the following:
 
-Thank you Belinda and Sean for considering me for Senior Data Applications Engineer. If would you like to skip directly to the solutions:
+# START HERE: 
+
+Hello Reader, I would like to express my gratitude to Belinda (recruiting team) and Sean (Hiring Manager) for considering me for the Senior Data Applications Engineer position.
+
+Before you proceed reading the entire assessment, I have consolidated the deliverables in the links below for your convenience. Please note the following before we begin the project:
 
 - [Part 1: Airflow DAG Orchestration](#part-1-airflow-dag)
 - [Part 2: FIFO Matching Business Logic](#part-2-fifo-matching-logic)
@@ -15,10 +18,6 @@ Thank you Belinda and Sean for considering me for Senior Data Applications Engin
 ## Overview
 
 This project implements an automated data pipeline for processing Thrive Cash transactions. It solves the business problem of matching "spent" and "expired" transactions to "earned" transactions using FIFO (First-In, First-Out) accounting rules.
-
-Before diving in to the approach and easy of navigation: 
-
-[Link Text](#part-1-airflow-dag)
 
 ### What is Thrive Cash?
 
